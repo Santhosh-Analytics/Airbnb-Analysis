@@ -1,0 +1,17 @@
+# Ignore compiled Python files
+*.pyc
+
+# Ignore files in the "build" directory
+/build/
+
+# Ignore files in the "venv" directory (virtual environment)
+/venv/
+
+*.csv
+
+*.ps1.*
+
+*.ps1
+
+Untitled*.*
+
