@@ -7,11 +7,10 @@
 # Ignore files in the "venv" directory (virtual environment)
 /venv/
 
-*.csv
-
 *.ps1.*
 
 *.ps1
 
 Untitled*.*
+Airbnb Analysis .docx
 
