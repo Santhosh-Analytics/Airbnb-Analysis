@@ -10,6 +10,7 @@ import streamlit_extras.metric_cards as metric_cards
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 from scipy.stats import gaussian_kde
+import plotly.express as px
 
 image=Image.open("air.png")
 
@@ -38,7 +39,7 @@ st.markdown(""" <style> button[data-baseweb="tab"] > di v[data-testid="stMarkdow
 
 
 st.markdown("<h1 style='text-align: center; font-size: 38px; color: #FF385C ; font-weight: 700;font-family:inherit;'>Airbnb Listings Data Analysis</h1>", unsafe_allow_html=True)
-st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
+st.markdown("<hr style='border: 2px solid #FFFFFF;'>", unsafe_allow_html=True)
 
 if selected == "Home":
 
@@ -89,21 +90,57 @@ def filter_df(df,col,filter):
 df=pd.read_csv("final_df.csv")
 
 if selected == "Data Exploration":
-    st.markdown('<style>div.css-1jpvgo6 {font-size: 16px; font-weight: bolder;font-family:PhonePeSans; } </style>', unsafe_allow_html=True)
+    st.markdown('<style>div.css-1jpvgo6 {font-size: 16px; font-weight: bolder;font-family:inherit; } </style>', unsafe_allow_html=True)
 
     tab, tab1, tab2, tab3, tab4, tab5= st.tabs(["***LISTINGS COUNT***","***PRICE ANALYSIS***","***AVAILABILITY ANALYSIS***","***LOCATION BASED***", "***GEOSPATIAL VISUALIZATION***", "***TOP CHARTS***"])
     with tab:
-        st.title("**Listing count in terms of cancellation policy and room type**")
-        country= st.selectbox("Select the Country",["All"] + list(map(str, df["country"].unique())))
+        
+        col1,col2=st.columns(2)
+        
+
+        country= col1.selectbox("Select the Country",["All"] + list(map(str, df["country"].unique())))
+        reg=list(df["region"].unique())
+        if country  != 'All':
+            reg=df.loc[df.country==country,'region'].unique()
+
+        region= col2.selectbox("Select the Region",["All"] + list(map(str, reg)))
+
 
         df0=filter_df(df,df.country,country)
+            
+        df0=filter_df(df0,df0.region,region)
+        
+        property_counts = df0['property_type'].value_counts()
+        sorted_property_types = property_counts.index.tolist()
 
+        shape = df0.property_type.value_counts().values
+        labels = df0.property_type.value_counts().index
+
+        st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
+        
+        st.header("**Listings Count by Property Type:**")
+        
+        colpie,colcount=st.columns([3,4])
+        fig = plt.figure(figsize=(12, 8))
+        sns.countplot(data=df0,x='property_type',order=sorted_property_types,)
+        fig1=px.pie(values=shape,names=labels,hole=0.35,color_discrete_sequence=px.colors.sequential.Magma)
+        with colpie:
+            st.plotly_chart(fig1.update_traces(visible=True,textfont=dict(size=18, color='red'),)
+            .update_layout(width=500, height=500,   legend_font=dict(size=13,color='red'),legend_title_text='Property Type',)
+            ,)
+        with colcount:
+            st.pyplot(fig, use_container_width=True)
+        
+        st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
+
+        st.header("**Listing count in terms of cancellation policy and room type**")
+        
         fig, axs = plt.subplots(1, 2, figsize=(16, 5))
         plt.subplot(121)
-        sns.histplot(data=df0,x='price',bins=30,kde=True,hue='room_type')
+        sns.histplot(data=df0,x='property_type',bins=30,kde=True,hue='room_type')
         plt.subplot(122)
-        sns.histplot(data=df0,x='price',kde=True,hue='cancellation_policy')
-        st.pyplot(fig,use_container_width=False)
+        sns.histplot(data=df0,x='cancellation_policy',kde=True,hue='cancellation_policy')
+        st.pyplot(fig,use_container_width=True)
 
         cancellation_order = df0['cancellation_policy'].value_counts().index
 
@@ -119,7 +156,9 @@ if selected == "Data Exploration":
         axs[1].set_title('Listing count by Cancellation Policy and Room Type')
         sns.countplot(x=df0['cancellation_policy'], hue=df0.room_type, order=cancellation_order, ax=axs[1])
         axs[1].tick_params(axis='x', rotation=10)  # Rotate x-axis labels
-        st.pyplot(fig,use_container_width=False)
+        st.pyplot(fig,use_container_width=True)
+        
+        st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
 
         st.header("**Listings Count by room type and country**")
 
@@ -129,7 +168,7 @@ if selected == "Data Exploration":
         sns.countplot(x=df0['room_type'],hue=df0.country,stat="percent", ax=axs[1])
         axs[1].set_title('Listings Count by room type and country')
         st.pyplot(fig,use_container_width=False)
-
+        st.dataframe(df0)
 
     with tab1:
         st.title("**Average price in terms of Cancellation policy and Accomodates**")
