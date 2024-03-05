@@ -5505,3 +5505,6 @@ _id,property_type,room_type,bed_type,minimum_nights,maximum_nights,cancellation_
 9987200,Hotel,Private room,Real Bed,3,60,flexible,2019-02-11,3,1,3,90,1,101,0,100,50,2,26,Rio de Janeiro,Rio De Janeiro,Brazil,-43.1765332648635,-22.9610763662046,53,10,10,10,10,10,9,97,51314789,100,3,True,Copacabana
 9990304,Condominium,Entire home/apt,Real Bed,3,365,Strict_14,2019-03-06,6,2,3,13,2,227,200,197.5,0,1,16,Lahaina,Hawaii,United States,-156.67646,20.87561,243,10,10,10,10,10,9,97,51013381,99,58,False,
 9993190,House,Entire home/apt,Real Bed,3,365,Strict_14,2019-03-06,6,2,4,15,2,220,200,197.5,0,1,15,Lahaina,Hawaii,United States,-156.66752,20.85894,258,10,9,10,10,10,9,92,51013381,99,58,False,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,692395.5,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,192.814118629908,,,,,,,,,,,,,,,,,,,,,,,
