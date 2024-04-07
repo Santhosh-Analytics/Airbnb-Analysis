@@ -27,7 +27,7 @@ with st.sidebar:
     
     selected = option_menu("Main Menu", ["Home", 'Data Exploration','EDA'], 
         icons=['house-door-fill','bar-chart-fill','credit-card'], menu_icon="cast", default_index=0,styles={
-        "container": {"padding": "0!important", "background-color": "azure"},
+        "container": {"padding": "0!important", "background-color": "gray"},
         "icon": {"color": "rgb(235, 48, 84)", "font-size": "25px","font-family":"inherit"}, 
         "nav-link": {"font-family":"inherit","font-size": "22px", "color": "#ffffff","text-align": "left", "margin":"0px", "--hover-color": "#84706E"},
         "nav-link-selected": {"font-family":"inherit","background-color": "azure","color": "#FF385C","font-size": "25px"},
@@ -131,7 +131,7 @@ region= st.sidebar.selectbox("Select the Region",["All"] + list(map(str, reg)))
 if selected == "Data Exploration":
     st.markdown('<style>div.css-1jpvgo6 {font-size: 16px; font-weight: bolder;font-family:inherit; } </style>', unsafe_allow_html=True)
 
-    tab, tab1, tab2, tab3, tab4, tab5= st.tabs(["***LISTINGS COUNT***","***PRICE ANALYSIS***","***AVAILABILITY ANALYSIS***","***LOCATION BASED***", "***GEOSPATIAL VISUALIZATION***", "***TOP CHARTS***"])
+    tab, tab1, tab2, tab3, tab4= st.tabs(["***LISTINGS COUNT***","***PRICE ANALYSIS***","***AVAILABILITY ANALYSIS***","***LOCATION BASED***", "***GEOSPATIAL VISUALIZATION***"])
     with tab:
 
         col1,col2=st.columns(2)
@@ -140,8 +140,8 @@ if selected == "Data Exploration":
         df0=filter_df(df,df.country,country)    
         df0=filter_df(df0,df0.region,region)
         
-        property_counts = pd.DataFrame(df0.groupby(['property_type']).agg({'_id':'count','price':'mean'})).reset_index()
-        room_counts = pd.DataFrame(df0.groupby(['room_type']).agg({'_id':'count','price':'mean'})).reset_index()
+        property_counts = pd.DataFrame(df0.groupby(['property_type']).agg({'_id':'count','price':'median'})).reset_index()
+        room_counts = pd.DataFrame(df0.groupby(['room_type']).agg({'_id':'count','price':'median'})).reset_index()
 
         st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
         
@@ -154,7 +154,7 @@ if selected == "Data Exploration":
             st.plotly_chart(create_plotly_charts(property_counts, 'Pie', 'property_type', '_id',hover_data=['price'],hole=0.35,color_discrete_sequence=px.colors.sequential.Magma,)
             .update_traces(textinfo='percent+value',hoverinfo='label+text',visible=True,textfont=dict(size=15,color='white',)
                 
-                          ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),hovertemplate='<b>Property Type:</b> %{label}<br>' +
+                          ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),hovertemplate='<b>Property Type:</b> %{label}<br>' +
                       '<b>Average Price:</b> %{customdata[0]:.2f}<br>' )
             .update_layout(width=400, height=400,   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Property Type',legend_title_font=dict(size=14,color='white'))
             ,use_container_width=True)
@@ -165,7 +165,7 @@ if selected == "Data Exploration":
              st.plotly_chart(create_plotly_charts(room_counts, 'Pie', 'room_type', '_id',hover_data=['price'],hole=0.35,color_discrete_sequence=px.colors.sequential.Magma)
              .update_traces(textinfo='percent+value',hoverinfo='label+text',visible=True,textfont=dict(size=15,color='white',)
                 
-                          ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),hovertemplate='<b>Property Type:</b> %{label}<br>' +
+                          ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),hovertemplate='<b>Room Type:</b> %{label}<br>' +
                       '<b>Average Price:</b> %{customdata[0]:.2f}<br>' )
             .update_layout(width=400, height=400,   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Room Type',legend_title_font=dict(size=14,color='white'))
             ,use_container_width=True)
@@ -179,7 +179,7 @@ if selected == "Data Exploration":
         a,b,c=st.columns([1,.0001,1])
 
         a.plotly_chart(create_plotly_charts(cancel_room,'Bar','cancellation_policy','count',color_discrete_sequence=px.colors.qualitative.Safe,color='property_type')
-        .update_traces(hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),visible=True,showlegend=True,textfont=dict(size=18, color='white'),)
+        .update_traces(hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),visible=True,showlegend=True,textfont=dict(size=18, color='white'),)
             .update_layout(width=400, height=400,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Property Type',legend_title_font=dict(size=14,color='white'))
             ,use_container_width=True)
         
@@ -188,7 +188,7 @@ if selected == "Data Exploration":
         cancel_prpty = df0.groupby(['cancellation_policy','room_type']).size().reset_index(name='count').sort_values(by='count',ascending=False)
 
         c.plotly_chart(create_plotly_charts(cancel_prpty,'Bar','cancellation_policy','count',color_discrete_sequence=px.colors.qualitative.Safe_r,color='room_type')
-        .update_traces(hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),visible=True,showlegend=True,textfont=dict(size=18, color='white'),)
+        .update_traces(hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),visible=True,showlegend=True,textfont=dict(size=18, color='white'),)
             .update_layout(width=400, height=400,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Room Type',legend_title_font=dict(size=14,color='white'))
             ,use_container_width=True)
         
@@ -201,7 +201,7 @@ if selected == "Data Exploration":
         
         
         st.plotly_chart(create_plotly_charts(room_type_counts,'Bar','region','count',color_discrete_sequence=px.colors.qualitative.Dark2,color='room_type')
-       .update_traces(hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),visible=True,showlegend=True,textfont=dict(size=18, color='white'),)
+       .update_traces(hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),visible=True,showlegend=True,textfont=dict(size=18, color='white'),)
             .update_layout(width=400, height=400,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='azure'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Room Type',legend_title_font=dict(size=14,color='azure'))
             ,use_container_width=True)
 
@@ -211,7 +211,7 @@ if selected == "Data Exploration":
         room_type_ctry = df0.groupby(['region', 'property_type']).size().reset_index(name='count').sort_values(by='count',ascending=False)
         
         st.plotly_chart(create_plotly_charts(room_type_ctry,'Bar','region','count',color_discrete_sequence=px.colors.qualitative.Dark2,color='property_type')
-        .update_traces(hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),visible=True,showlegend=True,textfont=dict(size=18, color='white'),)
+        .update_traces(hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),visible=True,showlegend=True,textfont=dict(size=18, color='white'),)
             .update_layout(width=400, height=400,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='azure'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Room Type',legend_title_font=dict(size=14,color='azure'))
             ,use_container_width=True)
 
@@ -229,7 +229,7 @@ if selected == "Data Exploration":
         
         
         c.plotly_chart(create_plotly_charts(room_type_counts,'Bar','country','count',color_discrete_sequence=px.colors.qualitative.Set1,color='room_type')
-        .update_traces(hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),visible=True,showlegend=True,textfont=dict(size=18, color='white'),)
+        .update_traces(hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),visible=True,showlegend=True,textfont=dict(size=18, color='white'),)
             .update_layout(width=400, height=400,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='azure'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Room Type',legend_title_font=dict(size=14,color='azure'))
             ,use_container_width=True)
 
@@ -239,7 +239,7 @@ if selected == "Data Exploration":
         room_type_ctry = df0.groupby(['country', 'property_type']).size().reset_index(name='count').sort_values(by='count',ascending=False)
         
         a.plotly_chart(create_plotly_charts(room_type_ctry,'Bar','country','count',color_discrete_sequence=px.colors.qualitative.Set1_r,color='property_type')
-        .update_traces(hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),visible=True,showlegend=True,textfont=dict(size=18, color='white'),)
+        .update_traces(hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),visible=True,showlegend=True,textfont=dict(size=18, color='white'),)
             .update_layout(width=400, height=400,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='azure'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Room Type',legend_title_font=dict(size=14,color='azure'))
             ,use_container_width=True)
 
@@ -252,7 +252,7 @@ if selected == "Data Exploration":
 
         st.plotly_chart(create_plotly_charts(top_host,'Bar','host_id','host_total_listings_count',color='superhost',color_discrete_sequence=px.colors.qualitative.Alphabet)
         .update_traces(hovertemplate='<b>Host ID:</b> %{label}<br>' +
-                      '<b>Count:</b> %{y:,.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),
+                      '<b>Count:</b> %{y:,.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
                       visible=True,showlegend=True,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.2f} ')
             .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'title': 'Price', 'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Room Type',legend_title_font=dict(size=14,color='white'),barmode='stack', )
             .update_xaxes(title='Host_id', type='category') ,use_container_width=True)
@@ -282,22 +282,22 @@ if selected == "Data Exploration":
 
         a,b,c=st.columns([1,.0001,1])
 
-        price_prpty = df0.groupby('property_type')['price'].mean().reset_index(name='price').sort_values(by='price',ascending=False)
+        price_prpty = df0.groupby('property_type')['price'].median().reset_index(name='price').sort_values(by='price',ascending=False)
 
         a.plotly_chart(create_plotly_charts(price_prpty,'Bar','property_type','price',text='price',color_discrete_sequence=px.colors.qualitative.Dark2,color='property_type')
        .update_traces(hovertemplate='<b>Property Type:</b> %{label}<br>' +
-                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),
+                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
                       visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.2f} ')
             .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Property Type',legend_title_font=dict(size=14,color='white'))
             ,use_container_width=True)
         
         b.markdown("<div style='border-left: 3px solid #FF385C;font-family:PhonePeSans; height: 400px;'></div>", unsafe_allow_html=True)
 
-        price_room = df0.groupby('room_type')['price'].mean().reset_index(name='price').sort_values(by='price',ascending=False)
+        price_room = df0.groupby('room_type')['price'].median().reset_index(name='price').sort_values(by='price',ascending=False)
 
         c.plotly_chart(create_plotly_charts(price_room,'Bar','room_type','price',color_discrete_sequence=px.colors.qualitative.Dark2,color='room_type')
         .update_traces(hovertemplate='<b>Room Type:</b> %{label}<br>' +
-                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),
+                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
                       visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.2f} ')
             .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Room Type',legend_title_font=dict(size=14,color='white'))
             ,use_container_width=True)
@@ -309,11 +309,11 @@ if selected == "Data Exploration":
         
         a,b,c=st.columns([.6,.0001,1])
 
-        price_cancel = df0.groupby('cancellation_policy')['price'].mean().reset_index(name='price').sort_values(by='price',ascending=False)
+        price_cancel = df0.groupby('cancellation_policy')['price'].median().reset_index(name='price').sort_values(by='price',ascending=False)
 
         a.plotly_chart(create_plotly_charts(price_cancel,'Bar','cancellation_policy','price',color_discrete_sequence=px.colors.qualitative.Dark2,color='cancellation_policy')
         .update_traces(hovertemplate='<b>Policy Type:</b> %{label}<br>' +
-                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),
+                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
                       visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.2f} ')
             .update_layout(width=400, height=400,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Property Type',legend_title_font=dict(size=14,color='white'))
             ,use_container_width=True)
@@ -323,11 +323,11 @@ if selected == "Data Exploration":
 
         
         
-        price_accom = df0.groupby('accommodates')['price'].mean().reset_index(name='price').sort_values(by='price',ascending=False)
+        price_accom = df0.groupby('accommodates')['price'].median().reset_index(name='price').sort_values(by='price',ascending=False)
         
         c.plotly_chart(create_plotly_charts(price_accom,'Bar','accommodates','price',color='accommodates',color_continuous_scale='Viridis_r',)
         .update_traces(hovertemplate='<b>Accommodates Count:</b> %{label}<br>' +
-                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),
+                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
                       visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.2f} ')
             .update_layout(width=400, height=400,xaxis={'categoryorder': 'total descending'},yaxis={'title': 'Price', 'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Room Type',legend_title_font=dict(size=14,color='white'),barmode='stack', )
             .update_xaxes(title='Accommodates', type='category') ,use_container_width=True)
@@ -339,12 +339,12 @@ if selected == "Data Exploration":
         df0['last_scraped'] = pd.to_datetime(df0['last_scraped'])
 
 
-        time=df0.groupby(['room_type','last_scraped'])['price'].mean().reset_index(name='price').sort_values(by='last_scraped')
+        time=df0.groupby(['room_type','last_scraped'])['price'].median().reset_index(name='price').sort_values(by='last_scraped')
         time['last_scraped'] = pd.to_datetime(time['last_scraped'])
 
         fig=px.line(data_frame=time,x='last_scraped',y='price',color='room_type',color_discrete_sequence=px.colors.qualitative.Dark2,)\
             .update_traces(hovertemplate='<b>Last_Scraped:</b> %{x}<br>' +
-                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),
+                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
                       visible=True,showlegend=True,textfont=dict(size=12, color='#ffffff'),textposition='top center',texttemplate='%{y:,.2f} ')\
         .update_layout(width=400, height=400,xaxis={'categoryorder': 'total descending'},yaxis={'title': 'Price', 'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Room Type',legend_title_font=dict(size=14,color='white'),barmode='stack', )
         
@@ -352,11 +352,11 @@ if selected == "Data Exploration":
         
 
 
-        time=df0.groupby(['superhost','last_scraped'])['price'].mean().reset_index(name='price').sort_values(by='last_scraped')
+        time=df0.groupby(['superhost','last_scraped'])['price'].median().reset_index(name='price').sort_values(by='last_scraped')
 
         fig=px.line(data_frame=time,x='last_scraped',y='price',color='superhost',color_discrete_sequence=px.colors.qualitative.Dark2,)\
             .update_traces(hovertemplate='<b>Last_Scraped:</b> %{x}<br>' +
-                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),
+                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
                       visible=True,showlegend=True,textfont=dict(size=12, color='#ffffff'),textposition='top center',texttemplate='%{y:,.2f} ')\
         .update_layout(width=400, height=400,xaxis={'categoryorder': 'total descending'},yaxis={'title': 'Price', 'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='superhost',legend_title_font=dict(size=14,color='white'),barmode='stack', )
         
@@ -370,22 +370,22 @@ if selected == "Data Exploration":
 
         a,b,c=st.columns([.8,.0001,1])
         
-        price_cty=pd.DataFrame(df0.groupby('country').agg({'number_of_reviews':'count','price':'mean'}).reset_index())
+        price_cty=pd.DataFrame(df0.groupby('country').agg({'number_of_reviews':'count','price':'median'}).reset_index())
 
         a.plotly_chart(create_plotly_charts(price_cty,'Bar','country','price',color='number_of_reviews',color_continuous_scale='cividis',)
         .update_traces(hovertemplate='<b>Country:</b> %{label}<br>' +
-                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),
+                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
                       visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.2f} ')
             .update_layout(coloraxis_colorbar=dict(title='Reviews'),width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'title': 'Price', 'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Room Type',legend_title_font=dict(size=14,color='white'),barmode='stack', )
             .update_xaxes(title='Country', type='category') ,use_container_width=True)
 
         b.markdown("<div style='border-left: 3px solid #FF385C;font-family:PhonePeSans; height: 400px;'></div>", unsafe_allow_html=True)
 
-        price_region=pd.DataFrame(df0.groupby('region').agg({'number_of_reviews':'count','price':'mean'}).reset_index())
+        price_region=pd.DataFrame(df0.groupby('region').agg({'number_of_reviews':'count','price':'median'}).reset_index())
 
         c.plotly_chart(create_plotly_charts(price_region,'Bar','region','price',color='number_of_reviews',color_continuous_scale='cividis',)
         .update_traces(hovertemplate='<b>Region:</b> %{label}<br>' +
-                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),
+                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
                       visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.2f} ')
             .update_layout(coloraxis_colorbar=dict(title='Reviews'),width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'title': 'Price', 'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Room Type',legend_title_font=dict(size=14,color='white'),barmode='stack', )
             .update_xaxes(title='Region', type='category') ,use_container_width=True)
@@ -398,22 +398,22 @@ if selected == "Data Exploration":
 
         a,b,c=st.columns([.8,.0001,1])
         
-        price_min=pd.DataFrame(df0.groupby('minimum_nights').agg({'number_of_reviews':'count','price':'mean'}).reset_index())
+        price_min=pd.DataFrame(df0.groupby('minimum_nights').agg({'number_of_reviews':'count','price':'median'}).reset_index())
 
         a.plotly_chart(create_plotly_charts(price_min,'Bar','minimum_nights','price',color='number_of_reviews',color_continuous_scale='Inferno',)
         .update_traces(hovertemplate='<b>Minimum Nights:</b> %{label}<br>' +
-                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),
+                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
                       visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.2f} ')
             .update_layout(coloraxis_colorbar=dict(title='Reviews'),width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'title': 'Price', 'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Reviews',legend_title_font=dict(size=14,color='white'),barmode='stack', )
             .update_xaxes(title='Minimum Night', type='category') ,use_container_width=True)
 
         b.markdown("<div style='border-left: 3px solid #FF385C;font-family:PhonePeSans; height: 400px;'></div>", unsafe_allow_html=True)
 
-        price_max=pd.DataFrame(df0.groupby('maximum_nights').agg({'number_of_reviews':'count','price':'mean'}).reset_index())
+        price_max=pd.DataFrame(df0.groupby('maximum_nights').agg({'number_of_reviews':'count','price':'median'}).reset_index())
 
         c.plotly_chart(create_plotly_charts(price_max,'Bar','maximum_nights','price',color='number_of_reviews',color_continuous_scale='Inferno_r',)
         .update_traces(hovertemplate='<b>Region:</b> %{label}<br>' +
-                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),
+                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
                       visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.2f} ')
             .update_layout(coloraxis_colorbar=dict(title='Reviews'),width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'title': 'Price', 'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Reviews',legend_title_font=dict(size=14,color='white'),barmode='stack', )
             .update_xaxes(title='Maximum Night', type='category') ,use_container_width=True)
@@ -430,7 +430,7 @@ if selected == "Data Exploration":
 
         a.plotly_chart(create_plotly_charts(top_host,'Bar','host_id','price',color='superhost',color_discrete_sequence=px.colors.qualitative.Alphabet)
         .update_traces(hovertemplate='<b>Host ID:</b> %{label}<br>' +
-                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),
+                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
                       visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.2f} ')
             .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'title': 'Price', 'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Super Host',legend_title_font=dict(size=14,color='white'),barmode='stack', )
             .update_xaxes(title='Host Id', type='category') ,use_container_width=True)
@@ -446,7 +446,7 @@ if selected == "Data Exploration":
 
         c.plotly_chart(create_plotly_charts(top_host,'Bar','host_response_rate','price',color='superhost',color_discrete_sequence=px.colors.qualitative.Alphabet)
         .update_traces(hovertemplate='<b>Host ID:</b> %{label}<br>' +
-                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),
+                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
                       visible=True,showlegend=True,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.2f} ')
             .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'title': 'Price', 'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Super Host',legend_title_font=dict(size=14,color='white'),barmode='stack', )
             .update_xaxes(title='Host Response Rate', type='category') ,use_container_width=True)
@@ -463,28 +463,174 @@ if selected == "Data Exploration":
 
         a,b,c=st.columns([1,.0001,1])
 
-        avail_prpty = df0.groupby('property_type')['annual_availability'].mean().reset_index(name='availability').sort_values(by='availability',ascending=False)
+        avail_prpty = df0.groupby('property_type')['annual_availability'].median().reset_index(name='availability').sort_values(by='availability',ascending=False)
 
         a.plotly_chart(create_plotly_charts(avail_prpty,'Bar','property_type','availability',text='availability',color_discrete_sequence=px.colors.qualitative.Dark2,color='property_type')
        .update_traces(hovertemplate='<b>Property Type:</b> %{label}<br>' +
-                      '<b>Average Price:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),
-                      visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.2f} ')
+                      '<b>Annual Availability:</b> %{y:.0f} - Days<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                      visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.0f} - Days ')
             .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Property Type',legend_title_font=dict(size=14,color='white'))
             ,use_container_width=True)
         
         b.markdown("<div style='border-left: 3px solid #FF385C;font-family:PhonePeSans; height: 400px;'></div>", unsafe_allow_html=True)
 
-        avail_room = df0.groupby('room_type')['annual_availability'].mean().reset_index(name='annual_availability').sort_values(by='annual_availability',ascending=False)
+        avail_room = df0.groupby('room_type')['annual_availability'].median().reset_index(name='annual_availability').sort_values(by='annual_availability',ascending=False)
 
         c.plotly_chart(create_plotly_charts(avail_room,'Bar','room_type','annual_availability',color_discrete_sequence=px.colors.qualitative.Dark2,color='room_type')
         .update_traces(hovertemplate='<b>Room Type:</b> %{label}<br>' +
-                      '<b>Annual Availability:</b> %{y:.2f}<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='red')),
-                      visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.2f} ')
+                      '<b>Annual Availability:</b> %{y:.0f} - Days<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                      visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.0f} - Days')
             .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Room Type',legend_title_font=dict(size=14,color='white'))
             ,use_container_width=True)
         
         st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
 
+        st.header("**Availability in terms of Cancellation Policy :**")
+
+        avail_res_rate=df0.groupby('cancellation_policy')['annual_availability'].median().reset_index(name='annual_availability').sort_values(by='annual_availability',ascending=False)
+
+        st.plotly_chart(create_plotly_charts(avail_res_rate,'Bar','cancellation_policy','annual_availability',color_discrete_sequence=px.colors.qualitative.Dark2,color='cancellation_policy')
+        .update_traces(hovertemplate='<b>Cancellation Policy:</b> %{label}<br>' +
+                      '<b>Annual Availability:</b> %{y:.0f} - Days<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                      visible=True,showlegend=True,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.0f} - Days')
+            .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_font=dict(size=14,color='white'))
+            ,use_container_width=True)
         
-        avail_res = pd.DataFrame(df0.groupby("host_response_rate")[["annual_availability","price"]].mean())
-        st.dataframe(avail_res)
+
+        st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
+
+        st.header("**Availability in terms of Country and Region:**")
+
+        a,b,c=st.columns([.80,.0001,1])
+
+        avail_prpty = df0.groupby('country')['annual_availability'].median().reset_index(name='availability').sort_values(by='availability',ascending=False)
+
+        a.plotly_chart(create_plotly_charts(avail_prpty,'Bar','country','availability',text='availability',color_discrete_sequence=px.colors.qualitative.Dark2,color='country')
+       .update_traces(hovertemplate='<b>Contry:</b> %{label}<br>' +
+                      '<b>Annual Availability:</b> %{y:.0f} - Days<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                      visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.0f} - Days ')
+            .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Property Type',legend_title_font=dict(size=14,color='white'))
+            ,use_container_width=True)
+        
+        b.markdown("<div style='border-left: 3px solid #FF385C;font-family:PhonePeSans; height: 400px;'></div>", unsafe_allow_html=True)
+
+        avail_room = df0.groupby('region')['annual_availability'].median().reset_index(name='annual_availability').sort_values(by='annual_availability',ascending=False)
+
+        c.plotly_chart(create_plotly_charts(avail_room,'Bar','region','annual_availability',color_discrete_sequence=px.colors.qualitative.Dark2,color='region')
+        .update_traces(hovertemplate='<b>Region:</b> %{label}<br>' +
+                      '<b>Annual Availability:</b> %{y:.0f} - Days<br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                      visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.0f} - Days')
+            .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Room Type',legend_title_font=dict(size=14,color='white'))
+            ,use_container_width=True)
+
+
+    with tab3:
+        
+        st.header("**Listing counts  and Price in  terms of Country :**")
+
+        a,b,c=st.columns([1,.0001,1])
+
+        avail_prpty = df0.groupby('country')['_id'].count().reset_index(name='Count').sort_values(by='Count',ascending=False)
+
+        a.plotly_chart(create_plotly_charts(avail_prpty,'Bar','country','Count',text='Count',color_discrete_sequence=px.colors.qualitative.Dark2,color='country')
+       .update_traces(hovertemplate='<b>Contry:</b> %{label}<br>' +
+                      '<b>Count:</b> %{y} <br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                      visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y} ')
+            .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Property Type',legend_title_font=dict(size=14,color='white'))
+            ,use_container_width=True)
+        
+        b.markdown("<div style='border-left: 3px solid #FF385C;font-family:PhonePeSans; height: 400px;'></div>", unsafe_allow_html=True)
+
+        avail_room = df0.groupby('country')['price'].median().reset_index(name='Avg_Price').sort_values(by='Avg_Price',ascending=False)
+
+        c.plotly_chart(create_plotly_charts(avail_room,'Bar','country','Avg_Price',color_discrete_sequence=px.colors.qualitative.Dark2,color='country')
+        .update_traces(hovertemplate='<b>Country:</b> %{label}<br>' +
+                      '<b>Avg. Price:</b> %{y:.0f} <br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                      visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.0f} ')
+            .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Room Type',legend_title_font=dict(size=14,color='white'))
+            ,use_container_width=True)
+
+        st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
+
+        st.header("**Listing counts  and Price in  terms of Region :**")
+
+        a,b,c=st.columns([1,.0001,1])
+
+        avail_prpty = df0.groupby('region')['_id'].count().reset_index(name='Count').sort_values(by='Count',ascending=False)
+
+        a.plotly_chart(create_plotly_charts(avail_prpty,'Bar','region','Count',text='Count',color_discrete_sequence=px.colors.qualitative.Dark2,color='region')
+       .update_traces(hovertemplate='<b>Region:</b> %{label}<br>' +
+                      '<b>Count:</b> %{y} <br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                      visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y} ')
+            .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Property Type',legend_title_font=dict(size=14,color='white'))
+            ,use_container_width=True)
+        
+        b.markdown("<div style='border-left: 3px solid #FF385C;font-family:PhonePeSans; height: 400px;'></div>", unsafe_allow_html=True)
+
+        avail_room = df0.groupby('region')['price'].median().reset_index(name='Avg_Price').sort_values(by='Avg_Price',ascending=False)
+
+        c.plotly_chart(create_plotly_charts(avail_room,'Bar','region','Avg_Price',color_discrete_sequence=px.colors.qualitative.Dark2,color='region')
+        .update_traces(hovertemplate='<b>Region:</b> %{label}<br>' +
+                      '<b>Avg. Price:</b> %{y:.0f} <br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                      visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.0f} ')
+            .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Room Type',legend_title_font=dict(size=14,color='white'))
+            ,use_container_width=True)
+        
+        st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
+        
+        st.header("**Cancellation Policy  in terms of  Region :**")
+
+        avail_prpty = df0.groupby(['region','cancellation_policy'])['_id'].count().reset_index(name='Count').sort_values(by='Count',ascending=False)
+
+        st.plotly_chart(create_plotly_charts(avail_prpty,'Bar','region','Count',text='Count',color_discrete_sequence=px.colors.qualitative.Dark2,color='cancellation_policy')
+       .update_traces(hovertemplate='<b>Region:</b> %{label}<br>' +
+                      '<b>Count:</b> %{y} <br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                      visible=True,showlegend=True,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y} ')
+            .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Property Type',legend_title_font=dict(size=14,color='white'))
+            ,use_container_width=True)
+        
+        st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
+
+        st.header("**Cancellation Policy  in terms of  Country :**")
+
+        avail_room = df0.groupby(['country','cancellation_policy'])['_id'].count().reset_index(name='Count').sort_values(by='Count',ascending=False)
+
+        st.plotly_chart(create_plotly_charts(avail_room,'Bar','country','Count',color_discrete_sequence=px.colors.qualitative.Dark2,color='cancellation_policy')
+        .update_traces(hovertemplate='<b>Country:</b> %{label}<br>' +
+                      '<b>Count:</b> %{y:.0f} <br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                      visible=True,showlegend=True,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.0f} ')
+            .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Room Type',legend_title_font=dict(size=14,color='white'))
+            ,use_container_width=True)
+        
+        st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
+        
+        st.header("**Number of Reviews  in terms of  Country & Region :**")
+        a,b,c=st.columns([1,.0001,1])
+        
+        avail_prpty = df0.groupby('region')['number_of_reviews'].sum().reset_index(name='Reviews_count').sort_values(by='Reviews_count',ascending=False)
+
+        a.plotly_chart(create_plotly_charts(avail_prpty,'Bar','region','Reviews_count',text='Reviews_count',color_discrete_sequence=px.colors.qualitative.Dark2,color='region')
+       .update_traces(hovertemplate='<b>Region:</b> %{label}<br>' +
+                      '<b>Number of Reviews:</b> %{y} <br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                      visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y} ')
+            .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Property Type',legend_title_font=dict(size=14,color='white'))
+            ,use_container_width=True)
+        
+        b.markdown("<div style='border-left: 3px solid #FF385C;font-family:PhonePeSans; height: 400px;'></div>", unsafe_allow_html=True)
+
+        avail_room = df0.groupby('country')['number_of_reviews'].sum().reset_index(name='Reviews_count').sort_values(by='Reviews_count',ascending=False)
+
+        c.plotly_chart(create_plotly_charts(avail_room,'Bar','country','Reviews_count',text='Reviews_count',color_discrete_sequence=px.colors.qualitative.Dark2,color='country')
+       .update_traces(hovertemplate='<b>Country:</b> %{label}<br>' +
+                      '<b>Number of Reviews:</b> %{y} <br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                      visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y} ')
+            .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Property Type',legend_title_font=dict(size=14,color='white'))
+            ,use_container_width=True)
+        st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
+
+
+elif selected == 'EDA':
+    with open('Airbnb.html', 'r',encoding='utf-8') as file:
+        html_content = file.read()
+
+    st.components.v1.html(html_content,width=1000, height=56330)
