@@ -659,12 +659,12 @@ if selected == "Data Exploration":
             rad=7
                 # dff0=df0.groupby('country').agg({'_id':'count','number_of_reviews':'sum','annual_availability':'sum','price':'sum','latitude':np.mean,'longitude':np.mean}).reset_index()
 
-        df01=df0.groupby(['country','region']).agg({'_id':'count','number_of_reviews':'sum','annual_availability':'sum','price':'sum','latitude':np.mean,'longitude':np.mean}).reset_index()
+        df01=df0.groupby('country').agg({'_id':'count','number_of_reviews':'sum','annual_availability':np.mean,'price':'sum','latitude':np.mean,'longitude':np.mean}).reset_index()
         listings_den = px.density_mapbox(df0, lat='latitude', lon='longitude', z='_id', opacity=.7, color_continuous_scale='Magma', 
-                                            mapbox_style="carto-positron", radius=rad, hover_data={"latitude": False, "longitude": False,  "country": True, 'region':True,'annual_availability':True}, 
-                                            hover_name='region', center=dict(lat=cen_lat, lon=cen_lon), zoom=zoom_level)
+                                            mapbox_style="carto-positron", radius=rad, hover_data={"latitude": False, "longitude": False,  "country": True, 'price':True}, 
+                                            hover_name='country', center=dict(lat=cen_lat, lon=cen_lon), zoom=zoom_level)
         listings_den   .update_layout( mapbox_zoom=zoom_level,  geo=dict(scope='asia', projection_type='equirectangular'), mapbox_center={"lat": cen_lat , "lon":cen_lon}, margin={"r": 0, "t": 0, "l": 0, "b": 0}, width=800, height=550)
-        listings_den.update_traces(hovertemplate='<b>%{hovertext}</b><br>Count: %{z:,.2f} <br>Country: %{customdata[3]} <br>Annual Availability - %{customdata[4]:,.20}')
+        listings_den.update_traces(hovertemplate='<b>%{hovertext}</b><br>Count: %{z} <br>Country: %{customdata[2]:,.2f} ')
         
         st.plotly_chart(listings_den, use_container_width=True)
         
@@ -674,7 +674,7 @@ if selected == "Data Exploration":
 
         if country !='All' and region=='All':
             zoom_level = 8.5
-            cen_lat=df0[df0['country']==country]['latitude'].mean()
+            cen_lat=df0[df0['country']==country]['latitude'].mean() 
             cen_lon=df0[df0['country']==country]['longitude'].mean()
             rad=10
             if region =='Hawaii':
@@ -695,12 +695,12 @@ if selected == "Data Exploration":
             cen_lat=0
             cen_lon=0
             rad=10
-        dff1=df0.groupby(['country','region']).agg({'_id':'count','number_of_reviews':'sum','annual_availability':'sum','price':'sum','latitude':np.mean,'longitude':np.mean}).reset_index()
+        dff1=df0.groupby(['country','region']).agg({'_id':'count','number_of_reviews':'sum','annual_availability':np.mean,'price':'sum','latitude':np.mean,'longitude':np.mean}).reset_index()
         listings_price_den = px.density_mapbox(dff1, lat='latitude', lon='longitude', z='price', opacity=1, color_continuous_scale='Magma', 
                                             mapbox_style="carto-positron", radius=rad, hover_data={"latitude": False, "longitude": False, "region": True, "country": True, 'annual_availability':True,'number_of_reviews':True}, 
                                             hover_name='region', center=dict(lat=cen_lat, lon=cen_lon), zoom=zoom_level)
         listings_price_den   .update_layout( mapbox_zoom=zoom_level,  geo=dict(scope='asia', projection_type='equirectangular'), mapbox_center={"lat": cen_lat , "lon":cen_lon}, margin={"r": 0, "t": 0, "l": 0, "b": 0}, width=800, height=550)
-        listings_price_den.update_traces(hovertemplate='<b>%{hovertext}</b><br>Price: %{z:,.2f} <br>Region: %{customdata[2]} <br>Availability  - %{customdata[4]}<br>Reviews Count - %{customdata[5]}')
+        listings_price_den.update_traces(hovertemplate='<b>%{hovertext}</b><br>Price: %{z:,.2f} <br>Region: %{customdata[2]} <br>Availability  - %{customdata[4]:,.0f}<br>Reviews Count - %{customdata[5]}')
 
         st.plotly_chart(listings_price_den, use_container_width=True)
 
@@ -708,10 +708,12 @@ if selected == "Data Exploration":
 
         st.header("**Listings Reviews Density across globe:**")
 
-        dff0=df0.groupby('country').agg({'_id':'count','number_of_reviews':'sum','host_total_listings_count':'sum','annual_availability':'sum','price':'sum','latitude':np.mean,'longitude':np.mean}).reset_index()
+        dff0=df0.groupby('country').agg({'_id':'count','number_of_reviews':'sum','review_scores_rating':np.mean,'host_total_listings_count':'sum','annual_availability':np.mean,'price':'sum','latitude':np.mean,'longitude':np.mean}).reset_index()
         aa = px.scatter_geo(dff0, lat='latitude', lon='longitude', size='number_of_reviews',color_discrete_sequence=px.colors.sequential.Viridis,
                                              text='country',size_max=25, hover_data={ 'country':True,"price": True, "number_of_reviews": True},
-                                           projection='equirectangular',color_continuous_scale='Magma',  ).update_traces(textfont_color='#000000') .update_layout(width=1000, height=800,geo=dict(center=dict(lat=cen_lat, lon=cen_lon)))
+                                           projection='equirectangular',color_continuous_scale='Magma',  )\
+                                            .update_traces(textfont_color='#000000',hovertemplate='<br>Country: %{customdata[0]} <br>Price  - %{customdata[1]:,.0f}<br>Reviews Count - %{customdata[2]:,.0f}')\
+                                              .update_layout(width=1000, height=800,geo=dict(center=dict(lat=cen_lat, lon=cen_lon)))
     
         st.plotly_chart(aa, use_container_width=True)
         
@@ -723,21 +725,24 @@ if selected == "Data Exploration":
         
         st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
         st.header("**Listings Availability  Density across globe:**")
-        # dff0=df0.groupby('country').agg({'_id':'count','number_of_reviews':'sum','annual_availability':'sum','price':'sum','latitude':np.mean,'longitude':np.mean}).reset_index()
     
         aa = px.scatter_geo(dff0, lat='latitude', lon='longitude', size='annual_availability',color_continuous_scale="Magma",color_discrete_sequence=px.colors.sequential.Magma,
-                                             text='country',size_max=25, hover_data={ 'longitude':False,'latitude':False,'country':True,"price": True, "annual_availability": True},
-                                           projection='equirectangular', ).update_traces(textfont_color='#000000') .update_layout(width=1000, height=800,geo=dict(center=dict(lat=cen_lat, lon=cen_lon)))
+                                             text='country',size_max=25, hover_data={ 'longitude':False,'latitude':False,'country':True,"price": True, "annual_availability": True,'number_of_reviews':True},
+                                           projection='equirectangular', )\
+                                            .update_traces(textfont_color='#000000',hovertemplate='<br>Country: %{customdata[2]} <br>Availability  - %{customdata[4]:,.0f}<br>Reviews Count - %{customdata[5]}')\
+                                              .update_layout(width=1000, height=800,geo=dict(center=dict(lat=cen_lat, lon=cen_lon)))
     
         st.plotly_chart(aa, use_container_width=True)
         st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
 
-        st.header("**Listings Availability  Density across globe:**")
+        st.header("**Review Rating  across globe:**")
 
     
-        aa = px.scatter_geo(dff0, lat='latitude', lon='longitude', size='host_total_listings_count',color_continuous_scale="Electric",color_discrete_sequence=px.colors.sequential.Electric,
-                                             text='country',size_max=25, hover_data={'longitude':False,'latitude':False, 'country':True,"price": True, "annual_availability": True,'host_total_listings_count':True},
-                                           projection='equirectangular', ).update_traces(textfont_color='#000000') .update_layout(width=1000, height=800,geo=dict(center=dict(lat=cen_lat, lon=cen_lon)))
+        aa = px.scatter_geo(dff0, lat='latitude', lon='longitude', size='review_scores_rating',color_continuous_scale="Electric",color_discrete_sequence=px.colors.sequential.Electric,
+                                             text='country',size_max=25, hover_data={'review_scores_rating':True,'longitude':False,'latitude':False, 'country':True,"price": True, "annual_availability": True,'host_total_listings_count':True},
+                                           projection='equirectangular', )\
+                                            .update_traces(textfont_color='#000000',hovertemplate='<br>Rating: %{customdata[0]:,.2f}%  <br>Country: %{customdata[3]} <br>Availability  - %{customdata[4]:,.0f}<br>Reviews Count - %{customdata[5]:,.0f}')\
+        .update_layout(width=1000, height=800,geo=dict(center=dict(lat=cen_lat, lon=cen_lon)))
     
         st.plotly_chart(aa, use_container_width=True)
         st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
