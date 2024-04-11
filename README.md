@@ -15,7 +15,7 @@
 
 - [Overview](#overview)
 - [Problem Statement](#problem-statement)
-- [Test My App]()
+- [Run/Test My App](run/test-my-app)
 - [Prerequisites](#prerequisites)
 - [Testing the Application Locally](#testing-the-application-locally)
 - [Demo/Presentation Video](#demopresentation-video)
@@ -37,8 +37,8 @@ This project simplifies the process of extracting and managing information from 
 
 This project aims to analyze Airbnb data using MongoDB Atlas, perform data cleaning and preparation, develop interactive geospatial visualizations, and create dynamic plots to gain insights into pricing variations, availability patterns, and location-based trends. Finally, build a comprehensive dashboard using Tableau or Power BI, combining various visualizations to present key insights from the analysis.
 
-## Test My App:
-    I deployed my app in Streamlit cloud to access directly from here.
+## Run/Test My App:
+    I deployed my app in Streamlit cloud to access directly from here. Click this link.
 
 ## Prerequisites:
 
