@@ -13,6 +13,7 @@ import scipy.stats as stats
 from scipy.stats import gaussian_kde
 import plotly.express as px
 sns.set_style("dark")
+import base64
 
 image=Image.open("air.png")
 
@@ -29,9 +30,9 @@ with st.sidebar:
     selected = option_menu("Main Menu", ["Home", 'Data Exploration','EDA'], 
         icons=['house-door-fill','bar-chart-fill','credit-card'], menu_icon="cast", default_index=0,styles={
         "container": {"padding": "0!important", "background-color": "gray"},
-        "icon": {"color": "rgb(235, 48, 84)", "font-size": "25px","font-family":"inherit"}, 
-        "nav-link": {"font-family":"inherit","font-size": "22px", "color": "#ffffff","text-align": "left", "margin":"0px", "--hover-color": "#84706E"},
-        "nav-link-selected": {"font-family":"inherit","background-color": "azure","color": "#FF385C","font-size": "25px"},
+        "icon": {"color": "rgb(235, 48, 84)", "font-size": "25px","font-family":"sans serif"}, 
+        "nav-link": {"font-family":"sans serif","font-size": "22px", "color": "#ffffff","text-align": "left", "margin":"0px", "--hover-color": "#84706E"},
+        "nav-link-selected": {"font-family":"sans serif","background-color": "azure","color": "#FF385C","font-size": "25px"},
     })
     st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
 
@@ -40,7 +41,7 @@ st.markdown(""" <style> button[data-baseweb="tab"] > di v[data-testid="stMarkdow
 
 
 
-st.markdown("<h1 style='text-align: center; font-size: 38px; color: #FF385C ; font-weight: 700;font-family:inherit;'>Airbnb Listings Data Analysis</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; font-size: 38px; color: #FF385C ; font-weight: 700;font-family:sans serif;'>Airbnb Listings Data Analysis</h1>", unsafe_allow_html=True)
 st.markdown("<hr style='border: 2px solid beige;'>", unsafe_allow_html=True)
 
 if selected == "Home":
@@ -53,9 +54,9 @@ if selected == "Home":
     add_vertical_space(1)
 
 
-    st.markdown("<h3 style='font-size: 30px;text-align:left; font-family:inherit;color: #FF385C;'> What is Airbnb?  </h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='font-size: 30px;text-align:left; font-family:sans serif;color: #FF385C;'> What is Airbnb?  </h3>", unsafe_allow_html=True)
 
-    st.markdown("""<p  style='text-align: left; font-size: 18px; color: #ffffff; font-weight: 400;font-family:inherit;'>  
+    st.markdown("""<p  style='text-align: left; font-size: 18px; color: #ffffff; font-weight: 400;font-family:sans serif;'>  
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      
                         Airbnb is an online marketplace that connects people who want to rent out
                 their property with people who are looking for accommodations,
@@ -72,13 +73,13 @@ if selected == "Home":
     add_vertical_space(1)
 
 
-    st.markdown("<h3 style='font-size: 30px;text-align:left; font-family:inherit;color: #FF385C;'> About Airbnb:  </h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='font-size: 30px;text-align:left; font-family:sans serif;color: #FF385C;'> About Airbnb:  </h3>", unsafe_allow_html=True)
     about="""Airbnb was born in 2007 when two Hosts welcomed three guests to their San Francisco home, and has since grown to over 5 million Hosts who have welcomed over 
     1.5 billion guest arrivals in almost every country across the globe. Every day, Hosts offer unique stays and experiences that make it possible for guests to connect 
     with communities in a more authentic way.
     """
 
-    st.markdown(f"""<p  style='text-align: left; font-size: 18px; color: #ffffff; font-weight: 400;font-family:inherit;'>
+    st.markdown(f"""<p  style='text-align: left; font-size: 18px; color: #ffffff; font-weight: 400;font-family:sans serif;'>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     {about} </p>""", unsafe_allow_html=True)
        
@@ -130,7 +131,7 @@ region= st.sidebar.selectbox("Select the Region",["All"] + list(map(str, reg)))
 
 
 if selected == "Data Exploration":
-    st.markdown('<style>div.css-1jpvgo6 {font-size: 16px; font-weight: bolder;font-family:inherit; } </style>', unsafe_allow_html=True)
+    st.markdown('<style>div.css-1jpvgo6 {font-size: 16px; font-weight: bolder;font-family:sans serif; } </style>', unsafe_allow_html=True)
 
     tab, tab1, tab2, tab3, tab4= st.tabs(["***LISTINGS COUNT***","***PRICE ANALYSIS***","***AVAILABILITY ANALYSIS***","***LOCATION BASED***", "***GEOSPATIAL VISUALIZATION***"])
 
@@ -724,10 +725,10 @@ if selected == "Data Exploration":
 
 elif selected == 'EDA':
 
-    with open('Airbnb Exploratory Data Analysis.html','r') as file:
+    with open('EDA.pdf','rb') as file:
         html_content = file.read()
+        pdf_base64 = base64.b64encode(html_content).decode('utf-8')
         
-    st.components.v1.html(html_content,width=1000, height=56330)
+    st.markdown(f'<iframe src="data:application/pdf;base64,{pdf_base64}" width="1300" height="900"></iframe>', unsafe_allow_html=True)
 
     
-

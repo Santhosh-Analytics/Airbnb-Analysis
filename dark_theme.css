@@ -1,0 +1,32 @@
+body {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+}
+
+.jp-RenderedHTMLCommon {
+    color: #d4d4d4;
+}
+
+.jp-InputArea-editor {
+    background-color: #2d2d2d;
+    color: #d4d4d4;
+}
+
+.jp-OutputArea-output {
+    background-color: #2d2d2d;
+    color: #d4d4d4;
+}
+
+.jp-Cell-inputWrapper {
+    background-color: #2d2d2d;
+}
+
+.jp-CodeCell.jp-mod-outputsScrolled .jp-Cell-outputWrapper {
+    background-color: #2d2d2d;
+}
+
+.jp-Notebook {
+    background-color: #1e1e1e;
+}
+
+/* Add more custom styles as needed */
