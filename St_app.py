@@ -15,6 +15,7 @@ import plotly.express as px
 sns.set_style("dark")
 import base64
 
+
 image=Image.open("air.png")
 
 st.set_page_config(
@@ -24,15 +25,60 @@ st.set_page_config(
     page_icon=image,
     )
 
+
+# Injecting CSS for custom styling
+st.markdown("""
+    <style>
+    /* Tabs */
+    div.stTabs [data-baseweb="tab-list"] button {
+        font-size: 25px;
+        color: #ffffff;
+        background-color: #4CAF50;
+        padding: 10px 20px;
+        margin: 10px 2px;
+        border-radius: 10px;
+    }
+    div.stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {
+        background-color: #009688;
+        color: white;
+    }
+    div.stTabs [data-baseweb="tab-list"] button:hover {
+        background-color: #3e8e41;
+        color: white;
+    }
+    /* Button */
+    .stButton>button {
+        font-size: 22px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 16px;
+    }
+    .stButton>button:hover {
+        background-color: #3e8e41;
+        color: white;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+
+
+
 with st.sidebar:
     st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
     
     selected = option_menu("Main Menu", ["Home", 'Data Exploration','EDA'], 
         icons=['house-door-fill','bar-chart-fill','credit-card'], menu_icon="cast", default_index=0,styles={
-        "container": {"padding": "0!important", "background-color": "gray"},
+        "container": {"padding": "0!important", "background-color": "lightblack"},
         "icon": {"color": "rgb(235, 48, 84)", "font-size": "25px","font-family":"sans serif"}, 
-        "nav-link": {"font-family":"sans serif","font-size": "22px", "color": "#ffffff","text-align": "left", "margin":"0px", "--hover-color": "#84706E"},
-        "nav-link-selected": {"font-family":"sans serif","background-color": "azure","color": "#FF385C","font-size": "25px"},
+        "nav-link": {"font-family": "sans serif", "font-size": "22px", "color": "#ffffff", "text-align": "left", "margin": "0px", "--hover-color": "#84706E"},
+        "nav-link-selected": {"font-family": "sans serif", "background-color": "#red", "color": "#55ACEE", "font-size": "25px"},
     })
     st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
 
@@ -732,3 +778,10 @@ elif selected == 'EDA':
     st.markdown(f'<iframe src="data:application/pdf;base64,{pdf_base64}" width="1300" height="900"></iframe>', unsafe_allow_html=True)
 
     
+    # html_file_path = 'EDA.html'
+    # import streamlit.components.v1 as components
+    # with open(html_file_path, 'r', encoding='utf-8') as file:
+    #     html_content = file.read()
+
+    # Display the HTML in Streamlit
+    # components.html(html_content, height=800, scrolling=True)
