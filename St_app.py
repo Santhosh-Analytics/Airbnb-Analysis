@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from PIL import Image
 from streamlit_extras.add_vertical_space import add_vertical_space
 import seaborn as sns
@@ -131,7 +132,8 @@ region= st.sidebar.selectbox("Select the Region",["All"] + list(map(str, reg)))
 if selected == "Data Exploration":
     st.markdown('<style>div.css-1jpvgo6 {font-size: 16px; font-weight: bolder;font-family:inherit; } </style>', unsafe_allow_html=True)
 
-    tab, tab1, tab2, tab3, tab4, tab5= st.tabs(["***LISTINGS COUNT***","***PRICE ANALYSIS***","***AVAILABILITY ANALYSIS***","***LOCATION BASED***", "***GEOSPATIAL VISUALIZATION***", "***TOP CHARTS***"])
+    tab, tab1, tab2, tab3, tab4= st.tabs(["***LISTINGS COUNT***","***PRICE ANALYSIS***","***AVAILABILITY ANALYSIS***","***LOCATION BASED***", "***GEOSPATIAL VISUALIZATION***"])
+
     with tab:
 
         col1,col2=st.columns(2)
@@ -262,18 +264,18 @@ if selected == "Data Exploration":
 
     with tab1:
         
-        # col1,col2=st.columns(2)
-        # country= col1.selectbox("Select the Country",["All"] + list(map(str, df["country"].unique())),key=1)
+        col1,col2=st.columns(2)
+        country= col1.selectbox("Select the Country",["All"] + list(map(str, df["country"].unique())),key=1)
         
-        # reg=list(df["region"].unique())
+        reg=list(df["region"].unique())
 
-        # if country  != 'All':
-        #     reg=df.loc[df.country==country,'region'].unique()
+        if country  != 'All':
+            reg=df.loc[df.country==country,'region'].unique()
 
-        # region= col2.selectbox("Select the Region",["All"] + list(map(str, reg)),key=2)
+        region= col2.selectbox("Select the Region",["All"] + list(map(str, reg)),key=2)
 
-        # df0=filter_df(df,df.country,country)
-        # df0=filter_df(df0,df0.region,region)
+        df0=filter_df(df,df.country,country)
+        df0=filter_df(df0,df0.region,region)
 
         st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
 
@@ -499,7 +501,233 @@ if selected == "Data Exploration":
             .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_font=dict(size=14,color='white'))
             ,use_container_width=True)
 
+    with tab3:
+        
+        st.header("**Listing counts  and Price in  terms of Country :**")
 
-    with tab5:
-        st.write('San')
-        sns.histplot(data=df)
+        a,b,c=st.columns([1,.0001,1])
+
+        avail_prpty = df0.groupby('country')['_id'].count().reset_index(name='Count').sort_values(by='Count',ascending=False)
+
+        a.plotly_chart(create_plotly_charts(avail_prpty,'Bar','country','Count',text='Count',color_discrete_sequence=px.colors.qualitative.Dark2,color='country')
+       .update_traces(hovertemplate='<b>Contry:</b> %{label}<br>' +
+                      '<b>Count:</b> %{y} <br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                      visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y} ')
+            .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Property Type',legend_title_font=dict(size=14,color='white'))
+            ,use_container_width=True)
+        
+        b.markdown("<div style='border-left: 3px solid #FF385C;font-family:PhonePeSans; height: 400px;'></div>", unsafe_allow_html=True)
+
+        avail_room = df0.groupby('country')['price'].median().reset_index(name='Avg_Price').sort_values(by='Avg_Price',ascending=False)
+
+        c.plotly_chart(create_plotly_charts(avail_room,'Bar','country','Avg_Price',color_discrete_sequence=px.colors.qualitative.Dark2,color='country')
+        .update_traces(hovertemplate='<b>Country:</b> %{label}<br>' +
+                      '<b>Avg. Price:</b> %{y:.0f} <br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                      visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.0f} ')
+            .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Room Type',legend_title_font=dict(size=14,color='white'))
+            ,use_container_width=True)
+
+        st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
+
+        st.header("**Listing counts  and Price in  terms of Region :**")
+
+        a,b,c=st.columns([1,.0001,1])
+
+        avail_prpty = df0.groupby('region')['_id'].count().reset_index(name='Count').sort_values(by='Count',ascending=False)
+
+        a.plotly_chart(create_plotly_charts(avail_prpty,'Bar','region','Count',text='Count',color_discrete_sequence=px.colors.qualitative.Dark2,color='region')
+       .update_traces(hovertemplate='<b>Region:</b> %{label}<br>' +
+                      '<b>Count:</b> %{y} <br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                      visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y} ')
+            .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Property Type',legend_title_font=dict(size=14,color='white'))
+            ,use_container_width=True)
+        
+        b.markdown("<div style='border-left: 3px solid #FF385C;font-family:PhonePeSans; height: 400px;'></div>", unsafe_allow_html=True)
+
+        avail_room = df0.groupby('region')['price'].median().reset_index(name='Avg_Price').sort_values(by='Avg_Price',ascending=False)
+
+        c.plotly_chart(create_plotly_charts(avail_room,'Bar','region','Avg_Price',color_discrete_sequence=px.colors.qualitative.Dark2,color='region')
+        .update_traces(hovertemplate='<b>Region:</b> %{label}<br>' +
+                      '<b>Avg. Price:</b> %{y:.0f} <br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                      visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.0f} ')
+            .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Room Type',legend_title_font=dict(size=14,color='white'))
+            ,use_container_width=True)
+        
+        st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
+        
+        st.header("**Cancellation Policy  in terms of  Region :**")
+
+        avail_prpty = df0.groupby(['region','cancellation_policy'])['_id'].count().reset_index(name='Count').sort_values(by='Count',ascending=False)
+
+        st.plotly_chart(create_plotly_charts(avail_prpty,'Bar','region','Count',text='Count',color_discrete_sequence=px.colors.qualitative.Dark2,color='cancellation_policy')
+       .update_traces(hovertemplate='<b>Region:</b> %{label}<br>' +
+                      '<b>Count:</b> %{y} <br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                      visible=True,showlegend=True,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y} ')
+            .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Property Type',legend_title_font=dict(size=14,color='white'))
+            ,use_container_width=True)
+        
+        st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
+
+        st.header("**Cancellation Policy  in terms of  Country :**")
+
+        avail_room = df0.groupby(['country','cancellation_policy'])['_id'].count().reset_index(name='Count').sort_values(by='Count',ascending=False)
+
+        st.plotly_chart(create_plotly_charts(avail_room,'Bar','country','Count',color_discrete_sequence=px.colors.qualitative.Dark2,color='cancellation_policy')
+        .update_traces(hovertemplate='<b>Country:</b> %{label}<br>' +
+                      '<b>Count:</b> %{y:.0f} <br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                      visible=True,showlegend=True,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y:,.0f} ')
+            .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Room Type',legend_title_font=dict(size=14,color='white'))
+            ,use_container_width=True)
+        
+        st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
+        
+        st.header("**Number of Reviews  in terms of  Country & Region :**")
+        a,b,c=st.columns([1,.0001,1])
+        
+        avail_prpty = df0.groupby('region')['number_of_reviews'].sum().reset_index(name='Reviews_count').sort_values(by='Reviews_count',ascending=False)
+
+        a.plotly_chart(create_plotly_charts(avail_prpty,'Bar','region','Reviews_count',text='Reviews_count',color_discrete_sequence=px.colors.qualitative.Dark2,color='region')
+       .update_traces(hovertemplate='<b>Region:</b> %{label}<br>' +
+                      '<b>Number of Reviews:</b> %{y} <br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                      visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y} ')
+            .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Property Type',legend_title_font=dict(size=14,color='white'))
+            ,use_container_width=True)
+        
+        b.markdown("<div style='border-left: 3px solid #FF385C;font-family:PhonePeSans; height: 400px;'></div>", unsafe_allow_html=True)
+
+        avail_room = df0.groupby('country')['number_of_reviews'].sum().reset_index(name='Reviews_count').sort_values(by='Reviews_count',ascending=False)
+
+        c.plotly_chart(create_plotly_charts(avail_room,'Bar','country','Reviews_count',text='Reviews_count',color_discrete_sequence=px.colors.qualitative.Dark2,color='country')
+       .update_traces(hovertemplate='<b>Country:</b> %{label}<br>' +
+                      '<b>Number of Reviews:</b> %{y} <br>' ,hoverlabel=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                      visible=True,showlegend=False,textfont=dict(size=12, color='#ffffff'),textposition='outside',texttemplate='%{y} ')
+            .update_layout(width=400, height=450,xaxis={'categoryorder': 'total descending'},yaxis={'categoryorder': 'total ascending'},   legend_font=dict(size=13,color='white'),legend=dict(bgcolor='rgba(0,0,0,0)'),legend_title_text='Property Type',legend_title_font=dict(size=14,color='white'))
+            ,use_container_width=True)
+        st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
+
+    with tab4:
+
+        st.header("**Listings Density across globe:**")
+        st.info('Use filters in the sidebar to narrow down to Coutry and or Region')
+        if country !='All' and region=='All':
+            zoom_level = 8.5
+            cen_lat=df0[df0['country']==country]['latitude'].mean()
+            cen_lon=df0[df0['country']==country]['longitude'].mean()
+            rad=5
+            if region =='Hawaii':
+                zoom_level = 6
+            elif country =='United States':
+                zoom_level = 2.5
+        elif country !='All' and region!='All':
+             zoom_level = 11
+             cen_lat=df0[df0['region']==region]['latitude'].mean()
+             cen_lon=df0[df0['region']==region]['longitude'].mean()
+             rad=5
+             if region =='Hawaii':
+                 zoom_level = 6
+             elif country == 'United States':
+                zoom_level = 2.5
+        else:
+            zoom_level=1
+            cen_lat=0
+            cen_lon=0
+            rad=7
+                # dff0=df0.groupby('country').agg({'_id':'count','number_of_reviews':'sum','annual_availability':'sum','price':'sum','latitude':np.mean,'longitude':np.mean}).reset_index()
+
+        df01=df0.groupby('country').agg({'_id':'count','number_of_reviews':'sum','annual_availability':np.mean,'price':'sum','latitude':np.mean,'longitude':np.mean}).reset_index()
+        listings_den = px.density_mapbox(df0, lat='latitude', lon='longitude', z='_id', opacity=.7, color_continuous_scale='Magma', 
+                                            mapbox_style="carto-positron", radius=rad, hover_data={"latitude": False, "longitude": False,  "country": True, 'price':True}, 
+                                            hover_name='country', center=dict(lat=cen_lat, lon=cen_lon), zoom=zoom_level)
+        listings_den   .update_layout( mapbox_zoom=zoom_level,  geo=dict(scope='asia', projection_type='equirectangular'), mapbox_center={"lat": cen_lat , "lon":cen_lon}, margin={"r": 0, "t": 0, "l": 0, "b": 0}, width=800, height=550)
+        listings_den.update_traces(hovertemplate='<b>%{hovertext}</b><br>Count: %{z} <br>Country: %{customdata[2]:,.2f} ')
+        
+        st.plotly_chart(listings_den, use_container_width=True)
+        
+        st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
+
+        st.header("**Listings Price Density across globe:**")
+
+        if country !='All' and region=='All':
+            zoom_level = 8.5
+            cen_lat=df0[df0['country']==country]['latitude'].mean() 
+            cen_lon=df0[df0['country']==country]['longitude'].mean()
+            rad=10
+            if region =='Hawaii':
+                zoom_level = 6
+            elif country =='United States':
+                zoom_level = 2.5
+        elif country !='All' and region!='All':
+             zoom_level = 11
+             cen_lat=df0[df0['region']==region]['latitude'].mean()
+             cen_lon=df0[df0['region']==region]['longitude'].mean()
+             rad=10
+             if region =='Hawaii':
+                 zoom_level = 6
+             elif country == 'United States':
+                zoom_level = 2.5
+        else:
+            zoom_level=1
+            cen_lat=0
+            cen_lon=0
+            rad=10
+        dff1=df0.groupby(['country','region']).agg({'_id':'count','number_of_reviews':'sum','annual_availability':np.mean,'price':'sum','latitude':np.mean,'longitude':np.mean}).reset_index()
+        listings_price_den = px.density_mapbox(dff1, lat='latitude', lon='longitude', z='price', opacity=1, color_continuous_scale='Magma', 
+                                            mapbox_style="carto-positron", radius=rad, hover_data={"latitude": False, "longitude": False, "region": True, "country": True, 'annual_availability':True,'number_of_reviews':True}, 
+                                            hover_name='region', center=dict(lat=cen_lat, lon=cen_lon), zoom=zoom_level)
+        listings_price_den   .update_layout( mapbox_zoom=zoom_level,  geo=dict(scope='asia', projection_type='equirectangular'), mapbox_center={"lat": cen_lat , "lon":cen_lon}, margin={"r": 0, "t": 0, "l": 0, "b": 0}, width=800, height=550)
+        listings_price_den.update_traces(hovertemplate='<b>%{hovertext}</b><br>Price: %{z:,.2f} <br>Region: %{customdata[2]} <br>Availability  - %{customdata[4]:,.0f}<br>Reviews Count - %{customdata[5]}')
+
+        st.plotly_chart(listings_price_den, use_container_width=True)
+
+        st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
+
+        st.header("**Listings Reviews Density across globe:**")
+
+        dff0=df0.groupby('country').agg({'_id':'count','number_of_reviews':'sum','review_scores_rating':np.mean,'host_total_listings_count':'sum','annual_availability':np.mean,'price':'sum','latitude':np.mean,'longitude':np.mean}).reset_index()
+        aa = px.scatter_geo(dff0, lat='latitude', lon='longitude', size='number_of_reviews',color_discrete_sequence=px.colors.sequential.Viridis,
+                                             text='country',size_max=25, hover_data={ 'country':True,"price": True, "number_of_reviews": True},
+                                           projection='equirectangular',color_continuous_scale='Magma',  )\
+                                            .update_traces(textfont_color='#000000',hovertemplate='<br>Country: %{customdata[0]} <br>Price  - %{customdata[1]:,.0f}<br>Reviews Count - %{customdata[2]:,.0f}')\
+                                              .update_layout(width=1000, height=800,geo=dict(center=dict(lat=cen_lat, lon=cen_lon)))
+    
+        st.plotly_chart(aa, use_container_width=True)
+        
+        def mode_func(x):
+            value_counts = x.value_counts()
+            mode_value = value_counts.idxmax()
+    
+            return mode_value
+        
+        st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
+        st.header("**Listings Availability  Density across globe:**")
+    
+        aa = px.scatter_geo(dff0, lat='latitude', lon='longitude', size='annual_availability',color_continuous_scale="Magma",color_discrete_sequence=px.colors.sequential.Magma,
+                                             text='country',size_max=25, hover_data={ 'longitude':False,'latitude':False,'country':True,"price": True, "annual_availability": True,'number_of_reviews':True},
+                                           projection='equirectangular', )\
+                                            .update_traces(textfont_color='#000000',hovertemplate='<br>Country: %{customdata[2]} <br>Availability  - %{customdata[4]:,.0f}<br>Reviews Count - %{customdata[5]}')\
+                                              .update_layout(width=1000, height=800,geo=dict(center=dict(lat=cen_lat, lon=cen_lon)))
+    
+        st.plotly_chart(aa, use_container_width=True)
+        st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
+
+        st.header("**Review Rating  across globe:**")
+
+    
+        aa = px.scatter_geo(dff0, lat='latitude', lon='longitude', size='review_scores_rating',color_continuous_scale="Electric",color_discrete_sequence=px.colors.sequential.Electric,
+                                             text='country',size_max=25, hover_data={'review_scores_rating':True,'longitude':False,'latitude':False, 'country':True,"price": True, "annual_availability": True,'host_total_listings_count':True},
+                                           projection='equirectangular', )\
+                                            .update_traces(textfont_color='#000000',hovertemplate='<br>Rating: %{customdata[0]:,.2f}%  <br>Country: %{customdata[3]} <br>Availability  - %{customdata[4]:,.0f}<br>Reviews Count - %{customdata[5]:,.0f}')\
+        .update_layout(width=1000, height=800,geo=dict(center=dict(lat=cen_lat, lon=cen_lon)))
+    
+        st.plotly_chart(aa, use_container_width=True)
+        st.markdown("<hr style='border: 2px solid #FF385C;'>", unsafe_allow_html=True)
+
+elif selected == 'EDA':
+
+    with open('Airbnb Exploratory Data Analysis.html','r') as file:
+        html_content = file.read()
+        
+    st.components.v1.html(html_content,width=1000, height=56330)
+
+    
+
