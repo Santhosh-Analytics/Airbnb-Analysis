@@ -6,6 +6,15 @@
 
 # Ignore files in the "venv" directory (virtual environment)
 /venv/
+airbnb-env/
+airbnb-env
+.airbnb-env
+/airbnb-env/
+/.airbnb-env/
+
+
+
+
 
 *.ps1.*
 
