@@ -14,6 +14,7 @@ from scipy.stats import gaussian_kde
 import plotly.express as px
 sns.set_style("dark")
 import geopandas as gpd
+
 image=Image.open("air.png")
 
 st.set_page_config(
