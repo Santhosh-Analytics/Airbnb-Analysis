@@ -1,8 +1,34 @@
-PP/   
-pp/
-.git
-__pycache__
+# Exclude virtual environments
+.airbnb/
+.venv/
+venv/
+env/
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
+.Python
+
+# Exclude development files
+.git/
+.gitignore
+.vscode/
+.idea/
 .DS_Store
+
+# Exclude local data and logs
+*.log
+*.sqlite
+*.db
+data/
+logs/
+
+# Exclude large files
+*.ipynb
+*.pdf
+*.zip
+*.tar.gz
+
+# Docker specific
+Dockerfile
+docker-compose.yml
