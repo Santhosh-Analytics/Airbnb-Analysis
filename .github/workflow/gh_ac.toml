@@ -54,8 +54,6 @@ jobs:
 
           enable-cache: true                     # persist uv download cache
 
- 
-
       # Install project dependencies (includes dev deps if defined)
 
       - name: uv sync
