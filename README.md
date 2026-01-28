@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <div align="center">
     <img alt="Static Badge" src="https://img.shields.io/badge/Airbnb-Analysis-red?style=for-the-badge&logo=Python&logoColor=%233776AB">
 
