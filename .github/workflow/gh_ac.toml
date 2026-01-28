@@ -1,0 +1,391 @@
+name: Test, Build & Push (uv → GHCR)
+
+on:
+
+  push:
+
+    branches: [ "main"]
+
+  pull_request:
+
+    branches: [ "main"]
+
+  workflow_dispatch:
+  
+env:
+
+  REGISTRY: ghcr.io
+
+  IMAGE_NAME: ${{ github.repository }}           # ghcr.io/<owner>/<repo>
+
+  DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+
+jobs:
+
+  # 1) Lint & test with uv (no Docker needed yet)
+
+  test:
+
+    name: Lint & Test (uv)
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      # Faster Python setup via runner cache (recommended by uv docs)
+
+      - name: Set up Python (reads .python-version if present)
+
+        uses: actions/setup-python@v5
+
+        with:
+
+          python-version-file: .python-version   # or: python-version: '3.12'
+
+      # Install uv and enable its cache
+
+      - name: Install uv
+
+        uses: astral-sh/setup-uv@v7
+
+        with:
+
+          enable-cache: true                     # persist uv download cache
+
+ 
+
+      # Install project dependencies (includes dev deps if defined)
+
+      - name: uv sync
+
+        run: uv sync --all-extras --dev --frozen
+
+ 
+
+      # Lint if Ruff is configured; skip silently otherwise
+
+      - name: Ruff (if configured)
+
+        if: ${{ hashFiles('pyproject.toml') != '' }}
+
+        run: |
+
+          if uv run python -c "import tomllib,sys; d=tomllib.load(open('pyproject.toml','rb')); sys.exit(0 if 'ruff' in (d.get('tool') or {}) else 1)" 2>/dev/null; then
+
+            uv run ruff check .
+
+          else
+
+            echo "Ruff not configured; skipping."
+
+          fi
+
+ 
+
+      # Run tests if tests/ exists; skip silently otherwise
+
+      - name: Pytest (if tests/ exists)
+
+        if: ${{ hashFiles('tests/**') != '' }}
+
+        run: uv run pytest -q
+
+ 
+
+      # Quick smoke check that Streamlit is resolvable in the env
+
+      - name: Streamlit version
+
+        run: uv run streamlit --version
+
+ 
+
+  # 2) Build & push Docker image to GHCR
+
+  docker:
+
+    name: Build & Push (GHCR)
+
+    runs-on: ubuntu-latest
+
+    needs: [ test ]
+
+    permissions:
+
+      contents: read
+
+      packages: write    # REQUIRED to push to GHCR
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU (multi-arch optional)
+
+        uses: docker/setup-qemu-action@v3
+ 
+
+      - name: Set up Docker Buildx
+
+        uses: docker/setup-buildx-action@v3
+
+
+      - name: Login to GHCR
+
+        uses: docker/login-action@v3
+
+        with:
+
+          registry: ${{ env.REGISTRY }}
+
+          username: ${{ github.actor }}
+
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+ 
+
+      # Generate proper tags/labels from git context
+
+      - name: Docker metadata
+
+        id: meta
+
+        uses: docker/metadata-action@v5
+
+        with:
+
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+          tags: |
+
+            type=sha,format=short
+
+            type=ref,event=branch
+
+            type=ref,event=pr
+
+            type=semver,pattern={{version}}
+
+            type=raw,value=latest,enable={{is_default_branch}}
+
+
+      - name: Build & push
+
+        uses: docker/build-push-action@v6
+
+        with:
+
+          context: .
+
+          push: ${{ github.event_name != 'pull_request' }}
+
+          tags: ${{ steps.meta.outputs.tags }}
+
+          labels: ${{ steps.meta.outputs.labels }}
+
+          # GHA cache for faster rebuilds
+
+          cache-from: type=gha
+
+          cache-to: type=gha,mode=max
+
+
+
+
+name: Test, Build & Push (uv → GHCR)
+
+on:
+
+  push:
+
+    branches: [ "main"]
+
+  pull_request:
+
+    branches: [ "main"]
+
+  workflow_dispatch:
+  
+env:
+
+  REGISTRY: ghcr.io
+
+  IMAGE_NAME: ${{ github.repository }}           # ghcr.io/<owner>/<repo>
+
+  DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+
+jobs:
+
+  # 1) Lint & test with uv (no Docker needed yet)
+
+  test:
+
+    name: Lint & Test (uv)
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      # Faster Python setup via runner cache (recommended by uv docs)
+
+      - name: Set up Python (reads .python-version if present)
+
+        uses: actions/setup-python@v5
+
+        with:
+
+          python-version-file: .python-version   # or: python-version: '3.12'
+
+      # Install uv and enable its cache
+
+      - name: Install uv
+
+        uses: astral-sh/setup-uv@v7
+
+        with:
+
+          enable-cache: true                     # persist uv download cache
+
+ 
+
+      # Install project dependencies (includes dev deps if defined)
+
+      - name: uv sync
+
+        run: uv sync --all-extras --dev --frozen
+
+ 
+
+      # Lint if Ruff is configured; skip silently otherwise
+
+      - name: Ruff (if configured)
+
+        if: ${{ hashFiles('pyproject.toml') != '' }}
+
+        run: |
+
+          if uv run python -c "import tomllib,sys; d=tomllib.load(open('pyproject.toml','rb')); sys.exit(0 if 'ruff' in (d.get('tool') or {}) else 1)" 2>/dev/null; then
+
+            uv run ruff check .
+
+          else
+
+            echo "Ruff not configured; skipping."
+
+          fi
+
+ 
+
+      # Run tests if tests/ exists; skip silently otherwise
+
+      - name: Pytest (if tests/ exists)
+
+        if: ${{ hashFiles('tests/**') != '' }}
+
+        run: uv run pytest -q
+
+ 
+
+      # Quick smoke check that Streamlit is resolvable in the env
+
+      - name: Streamlit version
+
+        run: uv run streamlit --version
+
+ 
+
+  # 2) Build & push Docker image to GHCR
+
+  docker:
+
+    name: Build & Push (GHCR)
+
+    runs-on: ubuntu-latest
+
+    needs: [ test ]
+
+    permissions:
+
+      contents: read
+
+      packages: write    # REQUIRED to push to GHCR
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU (multi-arch optional)
+
+        uses: docker/setup-qemu-action@v3
+ 
+
+      - name: Set up Docker Buildx
+
+        uses: docker/setup-buildx-action@v3
+
+
+      - name: Login to GHCR
+
+        uses: docker/login-action@v3
+
+        with:
+
+          registry: ${{ env.REGISTRY }}
+
+          username: ${{ github.actor }}
+
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+ 
+
+      # Generate proper tags/labels from git context
+
+      - name: Docker metadata
+
+        id: meta
+
+        uses: docker/metadata-action@v5
+
+        with:
+
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+          tags: |
+
+            type=sha,format=short
+
+            type=ref,event=branch
+
+            type=ref,event=pr
+
+            type=semver,pattern={{version}}
+
+            type=raw,value=latest,enable={{is_default_branch}}
+
+
+      - name: Build & push
+
+        uses: docker/build-push-action@v6
+
+        with:
+
+          context: .
+
+          push: ${{ github.event_name != 'pull_request' }}
+
+          tags: ${{ steps.meta.outputs.tags }}
+
+          labels: ${{ steps.meta.outputs.labels }}
+
+          # GHA cache for faster rebuilds
+
+          cache-from: type=gha
+
+          cache-to: type=gha,mode=max
+
+
+
