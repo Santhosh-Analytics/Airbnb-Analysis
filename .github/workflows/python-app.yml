@@ -24,7 +24,7 @@ jobs:
       - name: Set up Python (reads .python-version if present)
         uses: actions/setup-python@v5
         with:
-          python-version-file: .python-version   # or: python-version: '3.12'
+          python-version: '3.12'  # or '3.12.11'
 
       # Install uv and enable its cache
       - name: Install uv
